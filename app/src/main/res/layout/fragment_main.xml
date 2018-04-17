@@ -4,7 +4,7 @@
     android:id="@+id/ReloadSw"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="cl.kustom89.stressless.MainActivityFragment"
+    tools:context="cl.kustom89.stressless.PendingsFragments"
     tools:showIn="@layout/activity_main">
 
     <android.support.v7.widget.RecyclerView

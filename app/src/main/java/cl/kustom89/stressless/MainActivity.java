@@ -5,13 +5,20 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
+
+import cl.kustom89.stressless.models.Pending;
 
 public class MainActivity extends AppCompatActivity {
+
+    private PendingsFragments pendingsFragments;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,14 +27,38 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar );
         setSupportActionBar( toolbar );
 
+        pendingsFragments = (PendingsFragments) getSupportFragmentManager().findFragmentById(R.id.pendingsFragment);
+
         FloatingActionButton fab = (FloatingActionButton) findViewById( R.id.fab );
         fab.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Dialog dialog= new Dialog(MainActivity.this);
+                final Dialog dialog= new Dialog(MainActivity.this);
                 dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                 dialog.setContentView(R.layout.dialog_pending);
+
+                ImageButton button= dialog.findViewById(R.id.savePendingBtn);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        EditText input= dialog.findViewById(R.id.pendingET);
+                        String name=input.getText().toString();
+
+                        if(name.trim().length()>0){
+                            Pending pending= new Pending();
+                            pending.setName(name);
+                            pending.setDone(false);
+                            pending.save();
+
+                            Log.d("SAVE", String.valueOf(pending));
+
+                            pendingsFragments.updateList(pending);
+                        }
+                        dialog.dismiss();
+                    }
+                });
 
 
                 dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
