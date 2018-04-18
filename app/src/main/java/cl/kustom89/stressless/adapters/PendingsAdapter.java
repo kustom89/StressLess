@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import cl.kustom89.stressless.PendingClickListener;
 import cl.kustom89.stressless.R;
 import cl.kustom89.stressless.data.Queries;
 import cl.kustom89.stressless.models.Pending;
@@ -19,8 +20,15 @@ import cl.kustom89.stressless.models.Pending;
  */
 
 public class PendingsAdapter extends RecyclerView.Adapter<PendingsAdapter.ViewHolder>{
+
     private List<Pending> pendings=new Queries().pendings();
 
+    private PendingClickListener listener;
+
+
+    public PendingsAdapter(PendingClickListener listener) {
+        this.listener = listener;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent,int viewType) {
@@ -30,7 +38,7 @@ public class PendingsAdapter extends RecyclerView.Adapter<PendingsAdapter.ViewHo
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder,int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
 
         Pending pending= pendings.get( position );
         holder.textView.setText( pending.getName() );
@@ -39,26 +47,52 @@ public class PendingsAdapter extends RecyclerView.Adapter<PendingsAdapter.ViewHo
         holder.checkBox.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
-
-
-
+                if(isChecked){
+                    new android.os.Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            int auxPosition= holder.getAdapterPosition();
+                            Pending auxPending =pendings.get(auxPosition);
+                            auxPending.save();
+                            pendings.remove(auxPosition);
+                            notifyItemRemoved(auxPosition);
+                        }
+                    },400);
+                }
             }
         } );
+
         holder.textView.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                Pending auxPending = pendings.get(holder.getAdapterPosition());
+                listener.clickedID(auxPending.getId());
+
             }
         } );
-
-
-
     }
 
     @Override
     public int getItemCount() {
         return pendings.size();
     }
+
+    public void update(Pending pending){
+        pendings.add(pending);
+        notifyDataSetChanged();
+
+
+    }
+
+
+
+
+
+
+
+
+
 
     public static  class ViewHolder extends RecyclerView.ViewHolder{
         private CheckBox checkBox;
@@ -74,3 +108,18 @@ public class PendingsAdapter extends RecyclerView.Adapter<PendingsAdapter.ViewHo
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

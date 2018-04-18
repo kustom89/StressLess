@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import cl.kustom89.stressless.adapters.PendingsAdapter;
 import cl.kustom89.stressless.models.Pending;
@@ -16,7 +17,8 @@ import cl.kustom89.stressless.models.Pending;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PendingsFragments extends Fragment {
+public class PendingsFragments extends Fragment implements PendingClickListener {
+    private PendingsAdapter adapter;
 
     public PendingsFragments() {
     }
@@ -37,21 +39,19 @@ public class PendingsFragments extends Fragment {
         LinearLayoutManager layoutManager= new LinearLayoutManager( getContext() );
         recyclerView.setLayoutManager( layoutManager );
 
-        for (int i = 0; i <20 ; i++) {
-            Pending pending= new Pending(  );
-            pending.setName( String.valueOf( i ) );
-            pending.setDone( false );
-            pending.save();
-        }
-
-        PendingsAdapter adapter= new PendingsAdapter();
+        adapter= new PendingsAdapter(this);
         recyclerView.setAdapter( adapter );
-
-
     }
 
     public  void updateList(Pending pending){
+        adapter.update(pending);
         Log.d("pending",pending.getName());
+
+    }
+
+    @Override
+    public void clickedID(long id) {
+        Toast.makeText(getContext(), String.valueOf(id), Toast.LENGTH_SHORT).show();
 
     }
 }
